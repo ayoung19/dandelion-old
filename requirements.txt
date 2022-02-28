@@ -1,0 +1,9 @@
+Flask
+Flask-PyMongo
+Flask-Cors
+python-dotenv
+dnspython
+marshmallow
+python-jose
+six
+authlib
