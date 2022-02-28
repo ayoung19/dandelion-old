@@ -19,6 +19,7 @@ export const useAuthFetch = () => {
     try {
       const token = await getAccessTokenSilently();
 
+      console.log(process.env.REACT_APP_SERVER_URL, endpoint);
       const response = await fetch(
         `${process.env.REACT_APP_SERVER_URL}${endpoint}`,
         {
