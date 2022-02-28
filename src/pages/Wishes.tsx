@@ -10,7 +10,8 @@ export const Wishes: FC = () => {
 
   useEffect(() => {
     AuthFetch("GET", "/api/users");
-  }, [AuthFetch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div>
