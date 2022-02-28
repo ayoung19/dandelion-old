@@ -7,3 +7,4 @@ marshmallow
 python-jose
 six
 authlib
+gunicorn
