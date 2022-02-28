@@ -14,6 +14,7 @@ from flask_pymongo import PyMongo
 
 from bson.json_util import dumps, loads
 
+from marshmallow import ValidationError
 from models import WishSchema, UserSchema
 from env import AUTH0_DOMAIN, API_IDENTIFIER, MONGO_URI
 
@@ -37,6 +38,14 @@ CORS(
         "http://localhost:3000",
     ],
 )
+
+
+@app.errorhandler(ValidationError)
+def handle_exception(err):
+    return {
+        "status": "error",
+        "data": str(err),
+    }, 400
 
 
 # Format error response and append status code.
@@ -185,12 +194,35 @@ def api_users():
 
     user = UserSchema(only=["_id"]).load({ "_id": email })
     user["wishes"] = []
+    user["following"] = []
     db.users.update_one({ "_id": email }, { "$setOnInsert": user }, upsert=True)
     
     return {
         "status": "success",
         "data": loads(dumps(db.users.find_one({ "_id": email }))),
     }
+
+
+@app.route("/api/users/<string:id>", methods=["GET"])
+@requires_auth
+def api_users_id(id):
+    email = get_email()
+
+    if id == email:
+        return api_users()
+
+    user = db.users.find_one({ "_id": email })
+
+    if id in user["following"]:
+        return {
+            "status": "success",
+            "data": loads(dumps(db.users.find_one({ "_id": id })))
+        }
+
+    return {
+        "status": "error",
+        "data": "Cannot access this resource",
+    }, 401
 
 
 @app.route("/api/wishes", methods=["POST"])
@@ -219,6 +251,34 @@ def api_wishes_id(id):
 
     if request.method == "DELETE":
         db.users.update_one({ "_id": email }, { "$pull": { "wishes": { "id": id } } })
+    
+    return {
+        "status": "success",
+        "data": loads(dumps(db.users.find_one({ "_id": email }))),
+    }
+
+
+# TODO: Only allow following valid users
+@app.route("/api/following", methods=["POST"])
+@requires_auth
+def api_following():
+    email = get_email()
+
+    user = UserSchema(only=["_id"]).load(request.json)
+    db.users.update_one({ "_id": email }, { "$push": { "following": user["_id"] } })
+    
+    return {
+        "status": "success",
+        "data": loads(dumps(db.users.find_one({ "_id": email }))),
+    }
+
+
+@app.route("/api/following/<string:id>", methods=["DELETE"])
+@requires_auth
+def api_following_id(id):
+    email = get_email()
+
+    db.users.update_one({ "_id": email }, { "$pull": { "following": id } })
     
     return {
         "status": "success",

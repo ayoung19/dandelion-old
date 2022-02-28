@@ -9,3 +9,4 @@ class WishSchema(Schema):
 class UserSchema(Schema):
     _id = fields.Email(required=True)
     wishes = fields.List(fields.Nested(WishSchema), required=True)
+    following = fields.List(fields.Email(), required=True)
