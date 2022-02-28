@@ -10,7 +10,7 @@ export const Wishes: FC = () => {
 
   useEffect(() => {
     AuthFetch("GET", "/api/users");
-  }, []);
+  }, [AuthFetch]);
 
   return (
     <div>
