@@ -35,7 +35,7 @@ CORS(
         "Content-Type",
         "Authorization",
         "Access-Control-Allow-Origin",
-        "http://localhost:3000",
+        "*",
     ],
 )
 
