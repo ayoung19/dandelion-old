@@ -10,13 +10,6 @@ export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 export const AUTH0_DOMAIN = "andyluyoung.us.auth0.com";
 export const AUTH0_CLIENT_ID = "Qz1PPp3LBtL4mAHll8xF91LqsOBVp5Ur";
 export const AUTH0_AUDIENCE = "https://dandelion.api";
-export const SERVER_URL = "http://localhost:3010";
-
-interface AuthFetchProps {
-  method: string;
-  endpoint: string;
-  body?: string;
-}
 
 export const useAuthFetch = () => {
   const dispatch = useAppDispatch();
@@ -26,14 +19,17 @@ export const useAuthFetch = () => {
     try {
       const token = await getAccessTokenSilently();
 
-      const response = await fetch(`${SERVER_URL}${endpoint}`, {
-        method: method,
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: body,
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_SERVER_URL}${endpoint}`,
+        {
+          method: method,
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: body,
+        }
+      );
 
       const { status, data } = await response.json();
 
