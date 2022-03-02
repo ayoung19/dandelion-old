@@ -19,7 +19,7 @@ export const useAuthFetch = () => {
     try {
       const token = await getAccessTokenSilently();
 
-      console.log(process.env.REACT_APP_SERVER_URL, endpoint);
+      console.log(token, process.env.REACT_APP_SERVER_URL, endpoint);
       const response = await fetch(
         `${process.env.REACT_APP_SERVER_URL}${endpoint}`,
         {
@@ -38,6 +38,7 @@ export const useAuthFetch = () => {
 
       if (status === "success") {
         dispatch(hydrate(data));
+        return true;
       }
 
       if (status === "error") {
@@ -51,7 +52,9 @@ export const useAuthFetch = () => {
     } catch (error) {
       console.log(error);
     }
+
+    return false;
   };
 
-  return { AuthFetch };
+  return AuthFetch;
 };

@@ -1,7 +1,7 @@
 import { Action } from "redux";
 import { Toast } from "@elastic/eui/src/components/toast/global_toast_list";
 
-interface Wish {
+export interface Wish {
   id: string;
   url: string;
 }

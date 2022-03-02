@@ -4,7 +4,7 @@ import { useAppSelector, useAuthFetch } from "../utils";
 
 export const Wishes: FC = () => {
   const user = useAppSelector((state) => state.user);
-  const { AuthFetch } = useAuthFetch();
+  const AuthFetch = useAuthFetch();
   const [url, setUrl] = useState("");
   const [email, setEmail] = useState("");
 

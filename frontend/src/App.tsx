@@ -3,7 +3,7 @@ import { Switch } from "react-router-dom";
 import { ProtectedRoute } from "./auth/ProtectedRoute";
 import { useAuth0 } from "@auth0/auth0-react";
 
-import { Wishes } from "./pages/Wishes";
+import { Home } from "./pages/Home";
 import { FullPageSpinner } from "./components/FullPageSpinner";
 
 export const App: FC = () => {
@@ -15,7 +15,7 @@ export const App: FC = () => {
 
   return (
     <Switch>
-      <ProtectedRoute path="/" component={Wishes} />
+      <ProtectedRoute path="/" component={Home} />
     </Switch>
   );
 };
