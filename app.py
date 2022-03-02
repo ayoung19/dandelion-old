@@ -195,6 +195,7 @@ def api_users():
     user = UserSchema(only=["_id"]).load({ "_id": email })
     user["wishes"] = []
     user["following"] = []
+    user["followers"] = []
     db.users.update_one({ "_id": email }, { "$setOnInsert": user }, upsert=True)
     
     return {
@@ -258,14 +259,22 @@ def api_wishes_id(id):
     }
 
 
-# TODO: Only allow following valid users
 @app.route("/api/following", methods=["POST"])
 @requires_auth
 def api_following():
     email = get_email()
 
     user = UserSchema(only=["_id"]).load(request.json)
-    db.users.update_one({ "_id": email }, { "$push": { "following": user["_id"] } })
+
+    update_result = db.users.update_one({ "_id": user["_id"] }, { "$addToSet": { "followers": email } })
+
+    if update_result.matched_count != 1:
+        return {
+            "status": "error",
+            "data": "User doesn't exist"
+        }, 400
+
+    db.users.update_one({ "_id": email }, { "$addToSet": { "following": user["_id"] } })
     
     return {
         "status": "success",
@@ -277,6 +286,8 @@ def api_following():
 @requires_auth
 def api_following_id(id):
     email = get_email()
+
+    db.users.update_one({ "_id": id }, { "$pull": { "followers": email } })
 
     db.users.update_one({ "_id": email }, { "$pull": { "following": id } })
     
